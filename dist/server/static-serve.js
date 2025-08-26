@@ -14,7 +14,7 @@ export function setupStaticServing(app) {
     let publicPath;
     if (process.env.NODE_ENV === 'production') {
         // In production, static files are in dist/public
-        publicPath = path.join(process.cwd(), 'public');
+        publicPath = path.join(process.cwd(), 'dist');
         console.log('Production mode - serving from:', publicPath);
     }
     else {
@@ -37,7 +37,7 @@ export function setupStaticServing(app) {
         return;
     });
     // For any other routes that don't start with /api/, serve the index.html file (SPA routing)
-    app.get('/*splat', (req, res, next) => {
+    app.get('/*', (req, res, next) => {
         // Skip API routes
         if (req.path.startsWith('/api/')) {
             return next();
