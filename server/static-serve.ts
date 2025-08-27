@@ -41,11 +41,7 @@ export function setupStaticServing(app: express.Application) {
   });
 
   // SPA routing: serve index.html for all non-API routes
-  app.get('/*', (req, res, next) => {
-    if (req.path.startsWith('/api/')) {
-      return next();
-    }
-
+  app.get(/^\/(?!api).*/, (req, res) => {
     const indexPath = path.join(publicPath, 'index.html');
     res.sendFile(indexPath, (err) => {
       if (err) {
@@ -57,6 +53,24 @@ export function setupStaticServing(app: express.Application) {
     });
   });
 }
+
+//   // SPA routing: serve index.html for all non-API routes
+//   app.get('/*', (req, res, next) => {
+//     if (req.path.startsWith('/api/')) {
+//       return next();
+//     }
+
+//     const indexPath = path.join(publicPath, 'index.html');
+//     res.sendFile(indexPath, (err) => {
+//       if (err) {
+//         console.error('Error serving index.html:', err);
+//         res.status(500).send('Internal Server Error');
+//       } else {
+//         console.log('Served SPA route:', req.path);
+//       }
+//     });
+//   });
+// }
 
 
 // import path from 'path';
