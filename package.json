@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "main": "dist/server/index.js",
   "scripts": {
     "build": "vite build && tsc --project tsconfig.server.json",
     "dev": "tsx watch scripts/dev.ts",
