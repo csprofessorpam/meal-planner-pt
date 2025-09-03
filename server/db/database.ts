@@ -1,13 +1,27 @@
+// server/db/database.ts
 import { Kysely, SqliteDialect } from 'kysely';
 import Database from 'better-sqlite3';
-import type { Database as DBTypes } from './types.js';
+import type { Database as DB } from './types.js'; // <-- your types.ts
 
-// Create a Kysely instance with your database types
-export const db = new Kysely<DBTypes>({
+export const db = new Kysely<DB>({
   dialect: new SqliteDialect({
-    database: new Database('db.sqlite3')
-  })
+    database: new Database('db.sqlite3'), // <-- this is fine if better-sqlite3.d.ts exists
+  }),
 });
+
+
+
+
+// import { Kysely, SqliteDialect } from 'kysely';
+// import Database from 'better-sqlite3';
+// import type { Database as DB } from './types.js';
+
+// // Create a Kysely instance with your database types
+// export const db = new Kysely<DB>({
+//   dialect: new SqliteDialect({
+//     database: new Database('db.sqlite3')
+//   })
+// });
 
 
 // // server/db/database.ts
