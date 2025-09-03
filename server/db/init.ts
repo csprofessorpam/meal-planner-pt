@@ -1,52 +1,156 @@
+// server/db/init.ts
 import { db } from './database.js';
 
+/**
+ * Initialize the database: create tables if missing, seed categories
+ */
 export async function initializeDatabase() {
   console.log('Initializing database...');
 
   try {
-    // Check if recipe_categories table exists and has data
+    // Create tables if they don't exist
+    await db.schema
+      .createTable('recipe_categories')
+      .ifNotExists()
+      .addColumn('id', 'integer', col => col.primaryKey().autoIncrement())
+      .addColumn('name', 'text', col => col.notNull())
+      .addColumn('created_at', 'text', col => col.notNull())
+      .execute();
+
+    await db.schema
+      .createTable('recipes')
+      .ifNotExists()
+      .addColumn('id', 'integer', col => col.primaryKey().autoIncrement())
+      .addColumn('name', 'text', col => col.notNull())
+      .addColumn('category_id', 'integer', col => col.notNull())
+      .addColumn('servings', 'integer', col => col.notNull())
+      .addColumn('created_at', 'text', col => col.notNull())
+      .addColumn('updated_at', 'text', col => col.notNull())
+      .execute();
+
+    await db.schema
+      .createTable('recipe_ingredients')
+      .ifNotExists()
+      .addColumn('id', 'integer', col => col.primaryKey().autoIncrement())
+      .addColumn('recipe_id', 'integer', col => col.notNull())
+      .addColumn('item', 'text', col => col.notNull())
+      .addColumn('amount', 'real', col => col.notNull())
+      .addColumn('unit', 'text', col => col.notNull())
+      .execute();
+
+    await db.schema
+      .createTable('recipe_directions')
+      .ifNotExists()
+      .addColumn('id', 'integer', col => col.primaryKey().autoIncrement())
+      .addColumn('recipe_id', 'integer', col => col.notNull())
+      .addColumn('step_number', 'integer', col => col.notNull())
+      .addColumn('instruction', 'text', col => col.notNull())
+      .execute();
+
+    await db.schema
+      .createTable('daily_meals')
+      .ifNotExists()
+      .addColumn('id', 'integer', col => col.primaryKey().autoIncrement())
+      .addColumn('meal_date', 'text', col => col.notNull())
+      .addColumn('recipe_id', 'integer', col => col.notNull())
+      .addColumn('servings', 'integer', col => col.notNull())
+      .addColumn('created_at', 'text', col => col.notNull())
+      .addColumn('updated_at', 'text', col => col.notNull())
+      .execute();
+
+    console.log('All tables ensured to exist.');
+
+    // Seed recipe_categories if empty
     const categoryCount = await db
       .selectFrom('recipe_categories')
       .select(db => db.fn.count('id').as('count'))
       .executeTakeFirst();
 
     const count = Number(categoryCount?.count || 0);
-    console.log('Current category count:', count);
+    console.log('Current recipe_categories count:', count);
 
     if (count === 0) {
-      console.log('Seeding recipe categories...');
-
+      console.log('Seeding recipe_categories...');
       const categories = [
-        { name: 'Chicken' },
-        { name: 'Beef' },
-        { name: 'Fish' },
-        { name: 'Vegetarian Protein' },
-        { name: 'Starch' },
-        { name: 'Vegetable' },
-        { name: 'Sauce' },
+        'Chicken',
+        'Beef',
+        'Fish',
+        'Vegetarian Protein',
+        'Starch',
+        'Vegetable',
+        'Sauce',
       ];
 
-      await db
-        .insertInto('recipe_categories')
-        .values(
-          categories.map(cat => ({
-            name: cat.name,
-            created_at: new Date().toISOString(),
-          }))
-        )
+      await db.insertInto('recipe_categories')
+        .values(categories.map(name => ({
+          name,
+          created_at: new Date().toISOString()
+        })))
         .execute();
 
-      console.log('Recipe categories seeded successfully');
+      console.log('Recipe categories seeded successfully.');
     } else {
-      console.log('Recipe categories already exist, skipping seed');
+      console.log('Recipe categories already exist, skipping seed.');
     }
 
-    console.log('Database initialization completed');
-  } catch (error) {
-    console.error('Error initializing database:', error);
-    throw error;
+    console.log('Database initialization completed.');
+  } catch (err) {
+    console.error('Error initializing database:', err);
+    throw err;
   }
 }
+
+
+
+// import { db } from './database.js';
+
+// export async function initializeDatabase() {
+//   console.log('Initializing database...');
+
+//   try {
+//     // Check if recipe_categories table exists and has data
+//     const categoryCount = await db
+//       .selectFrom('recipe_categories')
+//       .select(db => db.fn.count('id').as('count'))
+//       .executeTakeFirst();
+
+//     const count = Number(categoryCount?.count || 0);
+//     console.log('Current category count:', count);
+
+//     if (count === 0) {
+//       console.log('Seeding recipe categories...');
+
+//       const categories = [
+//         { name: 'Chicken' },
+//         { name: 'Beef' },
+//         { name: 'Fish' },
+//         { name: 'Vegetarian Protein' },
+//         { name: 'Starch' },
+//         { name: 'Vegetable' },
+//         { name: 'Sauce' },
+//       ];
+
+//       await db
+//         .insertInto('recipe_categories')
+//         .values(
+//           categories.map(cat => ({
+//             name: cat.name,
+//             created_at: new Date().toISOString(),
+//           }))
+//         )
+//         .execute();
+
+//       console.log('Recipe categories seeded successfully');
+//     } else {
+//       console.log('Recipe categories already exist, skipping seed');
+//     }
+
+//     console.log('Database initialization completed');
+//   } catch (error) {
+//     console.error('Error initializing database:', error);
+//     throw error;
+//   }
+// }
 
 
 // // server/db/init.ts
