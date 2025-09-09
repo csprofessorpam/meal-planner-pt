@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { setupStaticServing } from './static-serve.js';
 import { recipesRouter } from './routes/recipes.js';
-import { mealsRouter } from './routes/meals.js';
+import mealsRouter from './routes/meals.js';
 import { initializeDatabase } from './db/init.js';
 dotenv.config();
 const app = express();

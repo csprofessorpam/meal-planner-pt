@@ -1,13 +1,32 @@
 // server/db/database.ts
 import { Kysely, SqliteDialect } from 'kysely';
 import Database from 'better-sqlite3';
-import type { Database as DB } from './types.js'; // <-- your types.ts
+import path from 'path';
+import type { Database as DB } from './types.js';
+
+// Make sure the SQLite file is in server/db/
+const dbPath = path.resolve('server/db/db.sqlite3');
 
 export const db = new Kysely<DB>({
   dialect: new SqliteDialect({
-    database: new Database('db.sqlite3'), // <-- this is fine if better-sqlite3.d.ts exists
+    database: new Database(dbPath),
   }),
 });
+
+
+
+
+
+// server/db/database.ts
+// import { Kysely, SqliteDialect } from 'kysely';
+// import Database from 'better-sqlite3';
+// import type { Database as DB } from './types.js'; // <-- your types.ts
+
+// export const db = new Kysely<DB>({
+//   dialect: new SqliteDialect({
+//     database: new Database('db.sqlite3'), // <-- this is fine if better-sqlite3.d.ts exists
+//   }),
+// });
 
 
 

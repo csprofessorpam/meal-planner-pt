@@ -25,28 +25,58 @@ export function ShoppingListGenerator() {
   };
 
   const generateShoppingList = async () => {
-    if (selectedMealIds.length === 0) return;
+  if (selectedMealIds.length === 0) return;
 
-    setLoading(true);
-    try {
-      const response = await fetch('/api/meals/shopping-list', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ mealIds: selectedMealIds }),
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setShoppingList(data);
-      }
-    } catch (error) {
-      console.error('Error generating shopping list:', error);
-    } finally {
-      setLoading(false);
+  setLoading(true);
+  try {
+    const response = await fetch('/api/meals/shopping-list', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ mealIds: selectedMealIds }), // <-- this matches the backend
+    });
+
+    if (response.ok) {
+      const data: ShoppingItem[] = await response.json();
+      setShoppingList(data); // <-- update state with generated list
+    } else {
+      const errorData = await response.json();
+      console.error('Error generating shopping list:', errorData);
+      setShoppingList([]);
     }
-  };
+  } catch (error) {
+    console.error('Error generating shopping list:', error);
+    setShoppingList([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  // const generateShoppingList = async () => {
+  //   if (selectedMealIds.length === 0) return;
+
+  //   setLoading(true);
+  //   try {
+  //     const response = await fetch('/api/meals/shopping-list', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ mealIds: selectedMealIds }),
+  //     });
+      
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       setShoppingList(data);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error generating shopping list:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const formatMealDate = (dateString: string) => {
     const date = new Date(dateString);
